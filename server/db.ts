@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, produtosBase, materiaisCores, avaliacoes } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,56 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+/**
+ * Obter todos os tipos de produtos base
+ */
+export async function getProdutosBaseList() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get produtos: database not available");
+    return [];
+  }
+
+  try {
+    return await db.select().from(produtosBase);
+  } catch (error) {
+    console.error("[Database] Failed to get produtos:", error);
+    throw error;
+  }
+}
+
+/**
+ * Obter todos os materiais e cores
+ */
+export async function getMateriaisCoresList() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get materiais: database not available");
+    return [];
+  }
+
+  try {
+    return await db.select().from(materiaisCores);
+  } catch (error) {
+    console.error("[Database] Failed to get materiais:", error);
+    throw error;
+  }
+}
+
+/**
+ * Obter todas as avaliações
+ */
+export async function getAvaliacoesList() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get avaliacoes: database not available");
+    return [];
+  }
+
+  try {
+    return await db.select().from(avaliacoes).orderBy(desc(avaliacoes.createdAt));
+  } catch (error) {
+    console.error("[Database] Failed to get avaliacoes:", error);
+    throw error;
+  }
+}

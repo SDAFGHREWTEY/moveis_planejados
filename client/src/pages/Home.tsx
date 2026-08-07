@@ -1,33 +1,68 @@
-import { useAuth } from "@/_core/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Streamdown } from 'streamdown';
+import { useState, useEffect } from 'react';
+import Navbar from '@/components/Navbar';
+import HeroSection from '@/components/HeroSection';
+import ProductConfigurator, { ProductConfig } from '@/components/ProductConfigurator';
+import SupportSection from '@/components/SupportSection';
+import ReviewsSection from '@/components/ReviewsSection';
+import Footer from '@/components/Footer';
+import { trpc } from '@/lib/trpc';
+import type { ProdutoBase, MaterialCor, Avaliacao } from '@/types';
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
 export default function Home() {
-  // The useAuth hook provides authentication state.
-  // To implement login/logout, call logout(), or start login from an event
-  // handler: onClick={() => startLogin()} (imported from "@/const"). Never call
-  // startLogin() during render (no href={startLogin()}) — it mints a one-time
-  // nonce cookie and must run only at the moment of navigation.
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const [cartItems, setCartItems] = useState(0);
+  const [produtos, setProdutos] = useState<ProdutoBase[]>([]);
+  const [materiais, setMateriais] = useState<MaterialCor[]>([]);
+  const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  // Buscar dados do backend com tRPC
+  const { data: produtosData, isLoading: produtosLoading } = trpc.produtos.list.useQuery();
+  const { data: materiaisData, isLoading: materiaisLoading } = trpc.materiais.list.useQuery();
+  const { data: avaliacoesData, isLoading: avaliacoesLoading } = trpc.avaliacoes.list.useQuery();
+
+  useEffect(() => {
+    if (produtosData) setProdutos(produtosData as ProdutoBase[]);
+    if (materiaisData) setMateriais(materiaisData as MaterialCor[]);
+    if (avaliacoesData) setAvaliacoes(avaliacoesData as Avaliacao[]);
+
+    const isLoading = produtosLoading || materiaisLoading || avaliacoesLoading;
+    setLoading(isLoading);
+  }, [produtosData, materiaisData, avaliacoesData, produtosLoading, materiaisLoading, avaliacoesLoading]);
+
+  const handleAddToCart = (config: ProductConfig) => {
+    setCartItems(prev => prev + 1);
+    console.log('Produto adicionado ao carrinho:', config);
+  };
+
+  const handleCartClick = () => {
+    console.log('Carrinho clicado');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-700 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
+    <div className="min-h-screen bg-white">
+      <Navbar cartItems={cartItems} onCartClick={handleCartClick} />
+      <HeroSection />
+      {produtos.length > 0 && materiais.length > 0 && (
+        <ProductConfigurator
+          produtos={produtos}
+          materiais={materiais}
+          onAddToCart={handleAddToCart}
+        />
+      )}
+      <SupportSection />
+      {avaliacoes.length > 0 && <ReviewsSection avaliacoes={avaliacoes} />}
+      <Footer />
     </div>
   );
 }
