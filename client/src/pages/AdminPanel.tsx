@@ -13,9 +13,9 @@ export default function AdminPanel() {
 
   const utils = trpc.useUtils();
   const { data: authData, isLoading: authLoading } = trpc.admin.check.useQuery();
-  const { data: produtos = [] } = trpc.produtos.list.useQuery(undefined, { enabled: authData?.isAdmin });
-  const { data: materiais = [] } = trpc.materiais.list.useQuery(undefined, { enabled: authData?.isAdmin });
-  const { data: pedidos = [] } = trpc.admin.pedidos.useQuery(undefined, { enabled: authData?.isAdmin });
+  const { data: produtos = [] } = trpc.produtos.list.useQuery(undefined, { enabled: !!authData?.isAdmin });
+  const { data: materiais = [] } = trpc.materiais.list.useQuery(undefined, { enabled: !!authData?.isAdmin });
+  const { data: pedidos = [] } = trpc.admin.pedidos.useQuery(undefined, { enabled: !!authData?.isAdmin });
 
   // Estado de formulário para novo móvel / edição
   const [produtoTipo, setProdutoTipo] = useState('');
