@@ -11,7 +11,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold text-lg mb-4">Sobre Nós</h3>
             <p className="text-sm leading-relaxed mb-4">
-              MadeiraSobMedida é especialista em móveis planejados de alto padrão, combinando qualidade premium com design sofisticado.
+              S&F Ambientes Planejados é especialista em móveis planejados de alto padrão, combinando qualidade premium com design sofisticado.
             </p>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold text-lg mb-4">Redes Sociais</h3>
             <p className="text-sm mb-4">
-              Siga-nos para inspiração e novidades sobre móveis planejados
+              Siga-nos para inspiração e novidades sobre S&F Ambientes Planejados
             </p>
             <div className="flex gap-4">
               <a

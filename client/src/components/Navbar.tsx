@@ -26,7 +26,7 @@ export default function Navbar({ cartItems, onCartClick }: NavbarProps) {
           <div className="flex-shrink-0">
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
               <span className="bg-gradient-to-r from-amber-700 to-amber-900 bg-clip-text text-transparent">
-                MadeiraSobMedida
+                S&F Ambientes Planejados
               </span>
             </h1>
             <p className="text-xs text-gray-600">Móveis Planejados Premium</p>

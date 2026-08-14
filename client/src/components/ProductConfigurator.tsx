@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { trpc } from '@/lib/trpc';
+import { toast } from 'sonner';
 import type { ProdutoBase, MaterialCor } from '../types';
 
 interface ProductConfiguratorProps {
@@ -15,9 +17,9 @@ interface ProductConfiguratorProps {
 export interface ProductConfig {
   tipoProduto: string;
   materialCor: string;
-  comprimento: number;
+  comprimento?: number;
   largura: number;
-  altura: number;
+  altura?: number;
   gabineteInvertido: boolean;
   encostadoParede: boolean;
   puxadoresEmbutidos: boolean;
@@ -32,30 +34,42 @@ export default function ProductConfigurator({
 }: ProductConfiguratorProps) {
   const [selectedTipo, setSelectedTipo] = useState<string>(produtos[0]?.tipo || '');
   const [selectedMaterial, setSelectedMaterial] = useState<string>(materiais[0]?.nome || '');
-  const [comprimento, setComprimento] = useState(100);
-  const [largura, setLargura] = useState(50);
-  const [altura, setAltura] = useState(80);
+  const [comprimento, setComprimento] = useState<number>(100);
+  const [largura, setLargura] = useState<number>(100); // Para móvel linear ou largura/profundidade
+  const [altura, setAltura] = useState<number>(80);
   const [gabineteInvertido, setGabineteInvertido] = useState(false);
   const [encostadoParede, setEncostadoParede] = useState(false);
   const [puxadoresEmbutidos, setPuxadoresEmbutidos] = useState(false);
   const [pesMetalRegulagem, setPesMetalRegulagem] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Calcular preço
+  const [nomeCliente, setNomeCliente] = useState('');
+  const [telefoneCliente, setTelefoneCliente] = useState('');
+
+  const produtoAtual = produtos.find(p => p.tipo === selectedTipo);
+  const materialAtual = materiais.find(m => m.nome === selectedMaterial);
+  const todasAsImagens = materiais.map(m => m.urlImagem);
+
+  // Motor de cálculo de preço adaptado aos dois tipos:
+  // 1. 'quadrado': guarda-roupa/armário -> altura x comprimento x valor base (multiplicado por material e opcionais)
+  // 2. 'linear': mesa/painel -> apenas largura x valor do metro quadrado (ou valor base) x multiplicador
   const precoCalculado = useMemo(() => {
-    const produto = produtos.find(p => p.tipo === selectedTipo);
-    const material = materiais.find(m => m.nome === selectedMaterial);
+    if (!produtoAtual || !materialAtual) return 0;
 
-    if (!produto || !material) return 0;
+    const valorBase = parseFloat(String(produtoAtual.valorBase || 150));
+    const multMaterial = parseFloat(String(materialAtual.multiplicador || 1.2));
+    const tipoCalc = produtoAtual.tipoCalculo || 'quadrado';
 
-    // Volume em m³
-    const volumeM3 = (comprimento * largura * altura) / 1000000;
-
-    // Preço base
-    let preco = parseFloat(produto.taxaBase as any);
-
-    // Adicionar volume * multiplicador do material
-    preco += volumeM3 * parseFloat(material.multiplicador as any) * 1000;
+    let preco = 0;
+    if (tipoCalc === 'quadrado') {
+      // Guarda-roupa / móvel quadradão: (Altura * Comprimento em m²) * valorBase * multMaterial
+      const areaM2 = (altura * comprimento) / 10000;
+      preco = areaM2 * valorBase * multMaterial * 10; // Fator de escala
+    } else {
+      // Móvel linear (só largura): (Largura em metros) * valorBase * multMaterial
+      const larguraMetros = largura / 100;
+      preco = larguraMetros * valorBase * multMaterial * 100;
+    }
 
     // Adicionais
     if (gabineteInvertido) preco += 150;
@@ -63,14 +77,11 @@ export default function ProductConfigurator({
     if (puxadoresEmbutidos) preco += 200;
     if (pesMetalRegulagem) preco += 250;
 
-    return preco;
-  }, [selectedTipo, selectedMaterial, comprimento, largura, altura, gabineteInvertido, encostadoParede, puxadoresEmbutidos, pesMetalRegulagem, produtos, materiais]);
+    return Math.max(preco, 100); // Mínimo de segurança
+  }, [produtoAtual, materialAtual, comprimento, largura, altura, gabineteInvertido, encostadoParede, puxadoresEmbutidos, pesMetalRegulagem]);
 
-  const precoVista = precoCalculado * 0.9; // 10% de desconto
+  const precoVista = precoCalculado * 0.9;
   const parcela = precoCalculado / 10;
-
-  const materialAtual = materiais.find(m => m.nome === selectedMaterial);
-  const todasAsImagens = materiais.map(m => m.urlImagem);
 
   const handleProximaImagem = () => {
     const proximoIndex = (currentImageIndex + 1) % todasAsImagens.length;
@@ -90,51 +101,82 @@ export default function ProductConfigurator({
     }
   };
 
+  const criarPedidoMutation = trpc.pedidos.criar.useMutation({
+    onSuccess: () => {
+      toast.success("Orçamento salvo com sucesso no banco de dados!");
+    },
+    onError: (err) => {
+      toast.error("Erro ao salvar pedido: " + err.message);
+    },
+  });
+
+  const handleWhatsAppOrder = async () => {
+    if (!produtoAtual) return;
+
+    const opcionaisLista = [
+      gabineteInvertido ? 'Gabinete Invertido' : '',
+      encostadoParede ? 'Encostado/Fixado na Parede' : '',
+      puxadoresEmbutidos ? 'Puxadores Embutidos (Cava)' : '',
+      pesMetalRegulagem ? 'Pés de Metal com Regulagem' : '',
+    ].filter(Boolean).join(', ');
+
+    // Salvar no banco de dados
+    try {
+      await criarPedidoMutation.mutateAsync({
+        nomeCliente: nomeCliente || 'Cliente Web',
+        telefoneCliente: telefoneCliente || 'Não informado',
+        tipoMovel: selectedTipo,
+        tipoCalculo: produtoAtual.tipoCalculo || 'quadrado',
+        materialCor: selectedMaterial,
+        comprimento: produtoAtual.tipoCalculo === 'quadrado' ? comprimento : undefined,
+        largura: largura,
+        altura: produtoAtual.tipoCalculo === 'quadrado' ? altura : undefined,
+        opcionais: opcionaisLista,
+        precoTotal: Math.round(precoCalculado * 100) / 100,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+
+    const especificacoes = `
+*PEDIDO DE MÓVEL PLANEJADO*
+👤 *Cliente:* ${nomeCliente || 'Não informado'}
+📱 *Telefone:* ${telefoneCliente || 'Não informado'}
+
+📦 *Tipo de Móvel:* ${selectedTipo} (${produtoAtual.tipoCalculo === 'quadrado' ? 'Cálculo por Altura x Comprimento' : 'Cálculo por Largura / Metro Linear'})
+🎨 *Material/Cor:* ${selectedMaterial}
+
+📐 *Medidas:*
+${produtoAtual.tipoCalculo === 'quadrado' ? `• Comprimento: ${comprimento}cm\n• Altura: ${altura}cm` : `• Largura: ${largura}cm`}
+
+✨ *Opções Adicionais:*
+${gabineteInvertido ? '✓ Gabinete Invertido\n' : ''}${encostadoParede ? '✓ Encostado/Fixado na Parede\n' : ''}${puxadoresEmbutidos ? '✓ Puxadores Embutidos (Cava)\n' : ''}${pesMetalRegulagem ? '✓ Pés de Metal com Regulagem\n' : ''}
+💰 *Preço:*
+• Total: R$ ${precoCalculado.toFixed(2)}
+• À Vista (10% desc): R$ ${precoVista.toFixed(2)}
+• Parcelado: 10x de R$ ${parcela.toFixed(2)}
+
+Gostaria de confirmar este orçamento.
+    `.trim();
+
+    const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(especificacoes)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   const handleAddToCart = () => {
     onAddToCart({
       tipoProduto: selectedTipo,
       materialCor: selectedMaterial,
-      comprimento,
+      comprimento: produtoAtual?.tipoCalculo === 'quadrado' ? comprimento : undefined,
       largura,
-      altura,
+      altura: produtoAtual?.tipoCalculo === 'quadrado' ? altura : undefined,
       gabineteInvertido,
       encostadoParede,
       puxadoresEmbutidos,
       pesMetalRegulagem,
       precoTotal: precoCalculado,
     });
-  };
-
-  const handleWhatsAppOrder = () => {
-    const especificacoes = `
-*PEDIDO DE MÓVEL PLANEJADO*
-
-📦 *Tipo de Móvel:* ${selectedTipo}
-🎨 *Material/Cor:* ${selectedMaterial}
-
-📐 *Medidas:*
-• Comprimento: ${comprimento}cm
-• Largura/Profundidade: ${largura}cm
-• Altura: ${altura}cm
-
-✨ *Opções Adicionais:*
-${gabineteInvertido ? '✓ Gabinete Invertido' : ''}
-${encostadoParede ? '✓ Encostado na Parede' : ''}
-${puxadoresEmbutidos ? '✓ Puxadores Embutidos' : ''}
-${pesMetalRegulagem ? '✓ Pés de Metal com Regulagem' : ''}
-
-💰 *Preço:*
-• Total: R$ ${precoCalculado.toFixed(2)}
-• À Vista (10% desc): R$ ${precoVista.toFixed(2)}
-• Parcelado: 10x de R$ ${parcela.toFixed(2)}
-
-Gostaria de mais informações sobre este orçamento.
-    `.trim();
-
-    // Substitua o número abaixo pelo seu número de WhatsApp (com código do país e área, sem caracteres especiais)
-    // Exemplo: 5511999999999 (55 = Brasil, 11 = São Paulo, 999999999 = número)
-    const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(especificacoes)}`;
-    window.open(whatsappUrl, '_blank');
+    toast.success("Móvel adicionado ao carrinho!");
   };
 
   return (
@@ -144,7 +186,7 @@ Gostaria de mais informações sobre este orçamento.
           Configurador de Produtos
         </h2>
         <p className="text-gray-600 text-center mb-12">
-          Personalize seu móvel e veja o preço em tempo real
+          Personalize seu móvel sob medida e calcule o valor em tempo real
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -159,7 +201,6 @@ Gostaria de mais informações sobre este orçamento.
                 />
               )}
 
-              {/* Botões de Navegação */}
               <button
                 onClick={handleImagemAnterior}
                 className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all"
@@ -199,6 +240,28 @@ Gostaria de mais informações sobre este orçamento.
           <div className="bg-white rounded-lg shadow-lg p-8">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Suas Especificações</h3>
 
+            {/* Dados do Cliente */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 p-4 bg-amber-50/50 rounded-lg border border-amber-200">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Seu Nome</label>
+                <Input
+                  type="text"
+                  placeholder="Ex: Maria Silva"
+                  value={nomeCliente}
+                  onChange={(e) => setNomeCliente(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Seu WhatsApp / Telefone</label>
+                <Input
+                  type="text"
+                  placeholder="(11) 99999-9999"
+                  value={telefoneCliente}
+                  onChange={(e) => setTelefoneCliente(e.target.value)}
+                />
+              </div>
+            </div>
+
             {/* Tipo de Móvel */}
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -211,55 +274,56 @@ Gostaria de mais informações sobre este orçamento.
                 <SelectContent>
                   {produtos.map((produto) => (
                     <SelectItem key={produto.id} value={produto.tipo}>
-                      {produto.tipo}
+                      {produto.tipo} ({produto.tipoCalculo === 'quadrado' ? 'Altura x Comprimento' : 'Largura x Metro Quadrado'})
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Medidas */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Comprimento (cm)
-                </label>
-                <Input
-                  type="number"
-                  min="30"
-                  max="300"
-                  value={comprimento}
-                  onChange={(e) => setComprimento(Number(e.target.value))}
-                  className="w-full"
-                />
+            {/* Medidas Dinâmicas conforme o tipo de cálculo */}
+            {produtoAtual?.tipoCalculo === 'quadrado' ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Comprimento (cm)
+                  </label>
+                  <Input
+                    type="number"
+                    min="30"
+                    max="400"
+                    value={comprimento}
+                    onChange={(e) => setComprimento(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Altura (cm)
+                  </label>
+                  <Input
+                    type="number"
+                    min="30"
+                    max="300"
+                    value={altura}
+                    onChange={(e) => setAltura(Number(e.target.value))}
+                  />
+                </div>
               </div>
-              <div>
+            ) : (
+              <div className="mb-6">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Largura/Profundidade (cm)
+                  Largura / Comprimento Linear (cm)
                 </label>
                 <Input
                   type="number"
-                  min="20"
-                  max="150"
+                  min="50"
+                  max="500"
                   value={largura}
                   onChange={(e) => setLargura(Number(e.target.value))}
-                  className="w-full"
                 />
+                <p className="text-xs text-gray-500 mt-1">Este móvel calcula o preço baseado na largura x valor do metro quadrado.</p>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Altura (cm)
-                </label>
-                <Input
-                  type="number"
-                  min="30"
-                  max="250"
-                  value={altura}
-                  onChange={(e) => setAltura(Number(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-            </div>
+            )}
 
             {/* Opções Adicionais */}
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
@@ -292,7 +356,7 @@ Gostaria de mais informações sobre este orçamento.
                     onCheckedChange={(checked) => setPuxadoresEmbutidos(checked as boolean)}
                   />
                   <label htmlFor="puxadores-embutidos" className="text-gray-700 cursor-pointer">
-                    Puxadores Embutidos (+R$ 200,00)
+                    Puxadores Embutidos (Cava) (+R$ 200,00)
                   </label>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -311,7 +375,7 @@ Gostaria de mais informações sobre este orçamento.
             {/* Preço */}
             <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-6 mb-6 border border-amber-200">
               <div className="mb-4">
-                <p className="text-gray-600 text-sm">Preço Total</p>
+                <p className="text-gray-600 text-sm">Preço Total Estimado</p>
                 <p className="text-4xl font-bold text-amber-900">
                   R$ {precoCalculado.toFixed(2)}
                 </p>
@@ -337,9 +401,9 @@ Gostaria de mais informações sobre este orçamento.
             <div className="space-y-3">
               <Button
                 onClick={handleWhatsAppOrder}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition-all"
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition-all shadow-md"
               >
-                💬 Encomendar via WhatsApp
+                💬 Salvar e Encomendar via WhatsApp
               </Button>
               <Button
                 onClick={handleAddToCart}

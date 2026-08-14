@@ -37,3 +37,13 @@
 - [x] Testes unitários do motor de cálculo de preço (8 testes passando)
 - [x] Integração com WhatsApp em todos os componentes
 - [x] Responsividade mobile e desktop
+
+## Novo Escopo: Banco Neon e Painel ADM
+- [ ] Configurar conexão com o PostgreSQL Neon (`DATABASE_URL`)
+- [ ] Atualizar schema Drizzle para suportar tipos de móveis (quadradão vs linear por largura) e madeiras
+- [ ] Criar procedimentos tRPC para login de administrador (user: thays, senha: ç1532)
+- [ ] Criar procedimentos para CRUD de móveis base (tipo, categoria de cálculo: 'quadrado' ou 'linear', valor por metro quadrado ou taxa base)
+- [ ] Criar procedimentos para CRUD de madeiras/cores (nome, multiplicador, URL de imagem)
+- [ ] Criar procedimentos para salvar pedidos de orçamento dos clientes no banco
+- [ ] Desenvolver painel administrativo protegido em rota secreta
+- [ ] Atualizar o frontend e o configurador de móveis para refletir os dois tipos de cálculo de preço
