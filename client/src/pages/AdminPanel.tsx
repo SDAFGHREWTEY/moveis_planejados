@@ -245,7 +245,7 @@ export default function AdminPanel() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {produtos.map((p) => (
+                    {produtos.map((p: any) => (
                       <tr key={p.id} className="hover:bg-gray-50">
                         <td className="p-4 font-mono text-sm">{p.id}</td>
                         <td className="p-4 font-semibold text-gray-900">{p.tipo}</td>
@@ -330,7 +330,7 @@ export default function AdminPanel() {
             <div className="bg-white rounded-xl shadow overflow-hidden">
               <h2 className="text-xl font-bold text-gray-900 p-6 border-b">Madeiras Cadastradas</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
-                {materiais.map((m) => (
+                {materiais.map((m: any) => (
                   <div key={m.id} className="bg-gray-50 border rounded-xl overflow-hidden shadow-sm flex flex-col">
                     <img src={m.urlImagem} alt={m.nome} className="w-full h-40 object-cover" />
                     <div className="p-4 flex-1 flex flex-col justify-between">
@@ -373,7 +373,7 @@ export default function AdminPanel() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {pedidos.map((ped) => (
+                    {pedidos.map((ped: any) => (
                       <tr key={ped.id} className="hover:bg-gray-50 text-sm">
                         <td className="p-4 font-mono">{ped.id}</td>
                         <td className="p-4 font-semibold">{ped.nomeCliente || 'Anônimo'}</td>
