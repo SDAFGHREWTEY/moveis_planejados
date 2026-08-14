@@ -47,3 +47,10 @@
 - [x] Criar procedimentos para salvar pedidos de orçamento dos clientes no banco
 - [x] Desenvolver painel administrativo protegido em rota secreta
 - [x] Atualizar o frontend e o configurador de móveis para refletir os dois tipos de cálculo de preço
+
+## Migração PostgreSQL Neon Definitiva
+- [x] Configurar driver `@neondatabase/serverless` ou `postgres` para PostgreSQL
+- [x] Atualizar `drizzle/schema.ts` com sintaxe puramente PostgreSQL (`pg-core`)
+- [x] Atualizar `drizzle.config.ts` para PostgreSQL dialect
+- [x] Reescrever `server/db.ts` utilizando consultas Drizzle/Postgres nativas
+- [x] Validar conexão e persistência de pedidos e painel ADM no banco Neon
