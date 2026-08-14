@@ -54,3 +54,15 @@
 - [x] Atualizar `drizzle.config.ts` para PostgreSQL dialect
 - [x] Reescrever `server/db.ts` utilizando consultas Drizzle/Postgres nativas
 - [x] Validar conexão e persistência de pedidos e painel ADM no banco Neon
+
+## Restauração do Catálogo e Fluxo do Cliente
+- [x] Criar componente `ProductsSection.tsx` para exibir o catálogo de móveis e madeiras publicamente
+- [x] Atualizar `Home.tsx` para incluir a vitrine de produtos e o link direto para o configurador
+- [x] Garantir que o configurador utilize os produtos cadastrados no banco (dinâmicos via admin)
+- [x] Validar o envio de orçamento via WhatsApp e salvamento no banco de dados
+
+## Refinamento Visual e Acesso Admin Estável
+- [x] Refinar o design geral da página inicial e seções com paleta sofisticada em tons de madeira nobre e dourado, tipografia elegante e espaçamento equilibrado
+- [x] Criar rotas `/admin` e `/admin-secreto-thays` apontando para o painel administrativo
+- [x] Adicionar um link/botão discreto no rodapé ("Área Administrativa ADM") para facilitar o acesso direto
+- [x] Melhorar o layout do Configurador e da Vitrine de Produtos (`ProductsSection.tsx`) com cards modernos, sombras suaves e transições refinadas

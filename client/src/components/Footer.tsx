@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Pin, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Pin, Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -15,15 +15,15 @@ export default function Footer() {
             </p>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
+                <MapPin className="w-4 h-4 text-amber-500" />
                 <span>São Paulo, SP</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
+                <Phone className="w-4 h-4 text-amber-500" />
                 <span>(11) 99999-9999</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
+                <Mail className="w-4 h-4 text-amber-500" />
                 <span>contato@madeirasob.com</span>
               </div>
             </div>
@@ -34,28 +34,23 @@ export default function Footer() {
             <h3 className="text-white font-bold text-lg mb-4">Links Rápidos</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#inicio" className="hover:text-white transition-colors">
+                <a href="#inicio" className="hover:text-amber-400 transition-colors">
                   Início
                 </a>
               </li>
               <li>
-                <a href="#configurador" className="hover:text-white transition-colors">
+                <a href="#produtos" className="hover:text-amber-400 transition-colors">
+                  Produtos e Catálogo
+                </a>
+              </li>
+              <li>
+                <a href="#configurador" className="hover:text-amber-400 transition-colors">
                   Configurador
                 </a>
               </li>
               <li>
-                <a href="#suporte" className="hover:text-white transition-colors">
+                <a href="#suporte" className="hover:text-amber-400 transition-colors">
                   Suporte
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Política de Privacidade
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Termos de Serviço
                 </a>
               </li>
             </ul>
@@ -65,11 +60,10 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold text-lg mb-4">Formas de Pagamento</h3>
             <ul className="space-y-2 text-sm">
-              <li>💳 Cartão de Crédito</li>
-              <li>💰 Dinheiro</li>
+              <li>💳 Cartão de Crédito (10x sem juros)</li>
+              <li>💰 Desconto à vista (10%)</li>
               <li>🏦 Transferência Bancária</li>
-              <li>📱 PIX</li>
-              <li>🔄 Parcelamento em até 10x</li>
+              <li>📱 PIX Instantâneo</li>
             </ul>
           </div>
 
@@ -77,7 +71,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold text-lg mb-4">Redes Sociais</h3>
             <p className="text-sm mb-4">
-              Siga-nos para inspiração e novidades sobre S&F Ambientes Planejados
+              Siga-nos para inspiração e novidades sobre S&F Ambientes Planejados.
             </p>
             <div className="flex gap-4">
               <a
@@ -112,14 +106,16 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-800 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-400">
-              &copy; {currentYear} MadeiraSobMedida. Todos os direitos reservados.
-            </p>
-            <p className="text-sm text-gray-400 mt-4 md:mt-0">
-              Desenvolvido com ❤️ para móveis de qualidade
-            </p>
+        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+          <p>&copy; {currentYear} S&F Ambientes Planejados. Todos os direitos reservados.</p>
+          <div className="mt-4 md:mt-0 flex items-center gap-6">
+            <a
+              href="/admin"
+              className="flex items-center gap-1.5 text-gray-400 hover:text-amber-400 transition-colors"
+            >
+              <ShieldCheck className="w-4 h-4 text-amber-500" />
+              <span>Painel Administrativo (ADM)</span>
+            </a>
           </div>
         </div>
       </div>
