@@ -1,56 +1,64 @@
-import { Facebook, Instagram, Pin, Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
+import { MapPin, Phone, Mail, Instagram, Facebook, Pin } from 'lucide-react';
+import { Link } from 'wouter';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-stone-950 text-stone-300 border-t border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-          {/* Sobre a Empresa */}
-          <div>
-            <h3 className="text-white font-bold text-lg mb-4">Sobre Nós</h3>
-            <p className="text-sm leading-relaxed mb-4">
-              S&F Ambientes Planejados é especialista em móveis planejados de alto padrão, combinando qualidade premium com design sofisticado.
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+          {/* Sobre a Empresa com Logo */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/manus-storage/IMG-20260818-WA0013_354b470b.jpg" 
+                alt="S&F Ambientes Planejados Logo" 
+                className="h-10 w-10 object-cover rounded-full border border-amber-500/40 shadow-sm"
+              />
+              <span className="text-white font-bold text-lg tracking-tight">S&F Ambientes</span>
+            </div>
+            <p className="text-sm leading-relaxed text-stone-400">
+              Especialistas em móveis planejados de alto padrão sob medida, unindo sofisticação, madeira nobre e excelência em cada detalhe.
             </p>
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-sm text-stone-400">
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-amber-500" />
-                <span>São Paulo, SP</span>
+                <MapPin className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                <span>São Paulo, SP - Atendimento Nacional</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-amber-500" />
+                <Phone className="w-4 h-4 text-amber-500 flex-shrink-0" />
                 <span>(11) 99999-9999</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-amber-500" />
-                <span>contato@madeirasob.com</span>
+                <Mail className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                <span>contato@sfambientes.com.br</span>
               </div>
             </div>
           </div>
 
           {/* Links Rápidos */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Links Rápidos</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-white font-bold text-base mb-4 tracking-wider uppercase border-l-2 border-amber-500 pl-3">Links Rápidos</h3>
+            <ul className="space-y-3 text-sm">
               <li>
-                <a href="#inicio" className="hover:text-amber-400 transition-colors">
+                <a href="#inicio" className="text-stone-400 hover:text-amber-400 transition-colors">
                   Início
                 </a>
               </li>
               <li>
-                <a href="#produtos" className="hover:text-amber-400 transition-colors">
+                <a href="#produtos" className="text-stone-400 hover:text-amber-400 transition-colors">
                   Produtos e Catálogo
                 </a>
               </li>
               <li>
-                <a href="#configurador" className="hover:text-amber-400 transition-colors">
-                  Configurador
+                <a href="#configurador" className="text-stone-400 hover:text-amber-400 transition-colors">
+                  Configurador de Orçamento
                 </a>
               </li>
               <li>
-                <a href="#suporte" className="hover:text-amber-400 transition-colors">
-                  Suporte
+                <a href="#suporte" className="text-stone-400 hover:text-amber-400 transition-colors">
+                  Suporte Especializado
                 </a>
               </li>
             </ul>
@@ -58,65 +66,58 @@ export default function Footer() {
 
           {/* Formas de Pagamento */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Formas de Pagamento</h3>
-            <ul className="space-y-2 text-sm">
-              <li>💳 Cartão de Crédito (10x sem juros)</li>
-              <li>💰 Desconto à vista (10%)</li>
-              <li>🏦 Transferência Bancária</li>
-              <li>📱 PIX Instantâneo</li>
+            <h3 className="text-white font-bold text-base mb-4 tracking-wider uppercase border-l-2 border-amber-500 pl-3">Formas de Pagamento</h3>
+            <p className="text-sm text-stone-400 mb-4">
+              Facilitamos a realização do seu projeto dos sonhos com condições exclusivas.
+            </p>
+            <ul className="space-y-2 text-sm text-stone-300">
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>10% de desconto à vista (Pix / TED)</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>Parcelamento em até 10x sem juros</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>Cartões de Crédito e Financiamento</span>
+              </li>
             </ul>
           </div>
 
           {/* Redes Sociais */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Redes Sociais</h3>
-            <p className="text-sm mb-4">
-              Siga-nos para inspiração e novidades sobre S&F Ambientes Planejados.
+            <h3 className="text-white font-bold text-base mb-4 tracking-wider uppercase border-l-2 border-amber-500 pl-3">Redes Sociais</h3>
+            <p className="text-sm text-stone-400 mb-4">
+              Acompanhe nossos últimos projetos executados e inspire-se.
             </p>
-            <div className="flex gap-4">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-gray-800 hover:bg-pink-600 p-3 rounded-full transition-colors"
-                aria-label="Instagram"
-              >
+            <div className="flex space-x-3 mb-6">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-stone-900 border border-stone-800 flex items-center justify-center text-stone-300 hover:bg-amber-600 hover:text-white transition-all">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-gray-800 hover:bg-blue-600 p-3 rounded-full transition-colors"
-                aria-label="Facebook"
-              >
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-stone-900 border border-stone-800 flex items-center justify-center text-stone-300 hover:bg-amber-600 hover:text-white transition-all">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a
-                href="https://pinterest.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-gray-800 hover:bg-red-600 p-3 rounded-full transition-colors"
-                aria-label="Pinterest"
-              >
+              <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-stone-900 border border-stone-800 flex items-center justify-center text-stone-300 hover:bg-amber-600 hover:text-white transition-all">
                 <Pin className="w-5 h-5" />
               </a>
+            </div>
+
+            {/* Atalho discreto para Painel ADM */}
+            <div className="pt-2 border-t border-stone-900">
+              <Link href="/admin">
+                <span className="text-xs text-stone-500 hover:text-amber-400 transition-colors cursor-pointer flex items-center gap-1.5 font-mono">
+                  <span>🔒</span> Painel Administrativo ADM
+                </span>
+              </Link>
             </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
-          <p>&copy; {currentYear} S&F Ambientes Planejados. Todos os direitos reservados.</p>
-          <div className="mt-4 md:mt-0 flex items-center gap-6">
-            <a
-              href="/admin"
-              className="flex items-center gap-1.5 text-gray-400 hover:text-amber-400 transition-colors"
-            >
-              <ShieldCheck className="w-4 h-4 text-amber-500" />
-              <span>Painel Administrativo (ADM)</span>
-            </a>
-          </div>
+        {/* Copyright */}
+        <div className="border-t border-stone-800/80 pt-8 text-center text-xs text-stone-500">
+          <p>© {currentYear} S&F Ambientes Planejados. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
