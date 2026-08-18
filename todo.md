@@ -66,3 +66,8 @@
 - [x] Criar rotas `/admin` e `/admin-secreto-thays` apontando para o painel administrativo
 - [x] Adicionar um link/botão discreto no rodapé ("Área Administrativa ADM") para facilitar o acesso direto
 - [x] Melhorar o layout do Configurador e da Vitrine de Produtos (`ProductsSection.tsx`) com cards modernos, sombras suaves e transições refinadas
+
+## Atualização de Contato e Acesso Administrativo
+- [x] Atualizar a localização do rodapé para Piracicaba, SP
+- [x] Atualizar o telefone de contato para +55 19 98727-4686
+- [x] Remover o atalho público do painel administrativo no rodapé

@@ -1,5 +1,4 @@
 import { MapPin, Phone, Mail, Instagram, Facebook, Pin } from 'lucide-react';
-import { Link } from 'wouter';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -24,11 +23,11 @@ export default function Footer() {
             <div className="space-y-2 text-sm text-stone-400">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                <span>São Paulo, SP - Atendimento Nacional</span>
+                <span>Piracicaba, SP</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                <span>(11) 99999-9999</span>
+                <span>+55 19 98727-4686</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-amber-500 flex-shrink-0" />
@@ -102,15 +101,6 @@ export default function Footer() {
               <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-stone-900 border border-stone-800 flex items-center justify-center text-stone-300 hover:bg-amber-600 hover:text-white transition-all">
                 <Pin className="w-5 h-5" />
               </a>
-            </div>
-
-            {/* Atalho discreto para Painel ADM */}
-            <div className="pt-2 border-t border-stone-900">
-              <Link href="/admin">
-                <span className="text-xs text-stone-500 hover:text-amber-400 transition-colors cursor-pointer flex items-center gap-1.5 font-mono">
-                  <span>🔒</span> Painel Administrativo ADM
-                </span>
-              </Link>
             </div>
           </div>
         </div>
